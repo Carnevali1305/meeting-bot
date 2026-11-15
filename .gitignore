@@ -12,3 +12,4 @@ dist/
 exports/
 .meeting-bot/
 .env
+.worktrees/
