@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Entry point executável para meeting-bot em modo desenvolvimento
+# (sem precisar instalar o pacote via pip install -e .)
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+exec python3 -m meeting_bot.cli "$@"

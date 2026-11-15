@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+*.wav
+exports/
+.meeting-bot/
+.env
