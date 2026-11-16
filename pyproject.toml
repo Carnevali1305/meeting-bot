@@ -27,10 +27,12 @@ dependencies = [
     "sounddevice>=0.4.7",
     "ffmpeg-python>=0.2.0",
     "faster-whisper>=1.0.0",
+    "av<16",  # faster-whisper 1.x usa metadata_errors, removido no av 16+
     "anthropic>=0.3.0",
     "python-docx>=0.8.11",
     "weasyprint>=60.0",
     "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [project.optional-dependencies]

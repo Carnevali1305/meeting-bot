@@ -1,0 +1,78 @@
+{
+  "tasks": {
+    "task-1794793533711-exx8c6": {
+      "taskId": "task-1794793533711-exx8c6",
+      "type": "review",
+      "description": "Análise completa da estrutura, arquitetura e dependências do projeto meeting-bot Python",
+      "priority": "normal",
+      "status": "pending",
+      "progress": 0,
+      "assignedTo": [],
+      "tags": [],
+      "createdAt": "2026-11-16T01:45:33.711Z",
+      "startedAt": null,
+      "completedAt": null
+    },
+    "task-1794793663152-d2o12o": {
+      "taskId": "task-1794793663152-d2o12o",
+      "type": "review",
+      "description": "Análise completa do projeto meeting-bot Python - estrutura, arquitetura, dependências, segurança e oportunidades de melhoria",
+      "priority": "normal",
+      "status": "in_progress",
+      "progress": 0,
+      "assignedTo": [
+        "agent-1794793575268-g0byek"
+      ],
+      "tags": [],
+      "createdAt": "2026-11-16T01:47:43.152Z",
+      "startedAt": "2026-11-16T01:49:46.452Z",
+      "completedAt": null
+    },
+    "task-1794794618907-tkldok": {
+      "taskId": "task-1794794618907-tkldok",
+      "type": "security",
+      "description": "Auditoria de segurança do projeto meeting-bot - verificar credenciais, permissões de arquivo, validação de inputs e vulnerabilidades potenciais",
+      "priority": "normal",
+      "status": "in_progress",
+      "progress": 0,
+      "assignedTo": [
+        "agent-1794793575268-g0byek"
+      ],
+      "tags": [],
+      "createdAt": "2026-11-16T02:03:38.907Z",
+      "startedAt": "2026-11-16T02:04:52.928Z",
+      "completedAt": null
+    },
+    "task-1794794639290-qlywbi": {
+      "taskId": "task-1794794639290-qlywbi",
+      "type": "optimization",
+      "description": "Análise de performance do projeto meeting-bot - identificar gargalos, otimizar transcrição Whisper, melhorar tempo de exportação",
+      "priority": "normal",
+      "status": "in_progress",
+      "progress": 0,
+      "assignedTo": [
+        "agent-1794793575268-g0byek"
+      ],
+      "tags": [],
+      "createdAt": "2026-11-16T02:03:59.290Z",
+      "startedAt": "2026-11-16T02:04:53.869Z",
+      "completedAt": null
+    },
+    "task-1794794727228-xhhxka": {
+      "taskId": "task-1794794727228-xhhxka",
+      "type": "documentation",
+      "description": "Gerar documentação arquitetural completa do meeting-bot com diagramas, fluxos e guias de uso",
+      "priority": "normal",
+      "status": "in_progress",
+      "progress": 0,
+      "assignedTo": [
+        "agent-1794793575268-g0byek"
+      ],
+      "tags": [],
+      "createdAt": "2026-11-16T02:05:27.228Z",
+      "startedAt": "2026-11-16T02:05:45.337Z",
+      "completedAt": null
+    }
+  },
+  "version": "3.0.0"
+}

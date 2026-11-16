@@ -1,0 +1,22 @@
+{
+  "agents": {
+    "agent-1794793575268-g0byek": {
+      "agentId": "agent-1794793575268-g0byek",
+      "agentType": "analyst",
+      "name": "meeting-bot-analyst",
+      "status": "busy",
+      "health": 1,
+      "taskCount": 0,
+      "config": {
+        "provider": "anthropic",
+        "timeout": 300,
+        "autoTools": true
+      },
+      "createdAt": "2026-11-16T01:46:15.268Z",
+      "model": "sonnet",
+      "modelRoutedBy": "default",
+      "currentTask": "task-1794794727228-xhhxka"
+    }
+  },
+  "version": "3.0.0"
+}

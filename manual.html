@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual meeting-bot</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #24292f;
+    --muted: #57606a;
+    --accent: #0969da;
+    --card: #f6f8fa;
+    --border: #d0d7de;
+    --code-bg: #eff2f5;
+    --ok: #1a7f37;
+    --warn: #9a6700;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --card: #161b22;
+      --border: #30363d;
+      --code-bg: #1c2128;
+      --ok: #3fb950;
+      --warn: #d29922;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 2rem 16px 4rem; }
+  header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
+  h1 { margin: 0 0 .3rem; font-size: 2rem; }
+  .subtitle { color: var(--muted); margin: 0; }
+  h2 {
+    font-size: 1.35rem;
+    margin-top: 2.5rem;
+    padding-bottom: .3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1.05rem; margin-top: 1.5rem; }
+  code {
+    background: var(--code-bg);
+    padding: .15em .4em;
+    border-radius: 5px;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-size: .9em;
+  }
+  pre {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid var(--border); padding: .5rem .75rem; text-align: left; }
+  th { background: var(--card); }
+  td code { white-space: nowrap; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    margin: 1rem 0;
+  }
+  .card.warn { border-left-color: var(--warn); }
+  .card.ok { border-left-color: var(--ok); }
+  .toc { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.5rem; }
+  .toc ol { margin: .3rem 0; padding-left: 1.2rem; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .path { word-break: break-all; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .85rem; }
+  @media (max-width: 600px) {
+    table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🤖 meeting-bot — Manual de Uso</h1>
+  <p class="subtitle">Captura, transcrição e resumo automático de reuniões via linha de comando</p>
+</header>
+
+<nav class="toc">
+  <strong>Índice</strong>
+  <ol>
+    <li><a href="#instalacao">Instalação e ambiente virtual</a></li>
+    <li><a href="#env">Configurando a chave de API (.env)</a></li>
+    <li><a href="#comandos">Comandos</a></li>
+    <li><a href="#fluxo">Fluxo de trabalho típico</a></li>
+    <li><a href="#arquivos">Onde ficam os arquivos</a></li>
+    <li><a href="#config">Configurações (config.yaml)</a></li>
+    <li><a href="#problemas">Solução de problemas</a></li>
+  </ol>
+</nav>
+
+<h2 id="instalacao">1. Instalação e ambiente virtual</h2>
+
+<p>O projeto usa um ambiente virtual em <code>.venv</code>. <strong>Sempre ative-o antes de usar o bot</strong> — sem isso, o terminal não encontra o comando nem as dependências:</p>
+
+<pre><code># Dentro da pasta do projeto:
+source .venv/bin/activate
+
+# Confirmar que está tudo instalado:
+./bin/meeting-bot doctor</code></pre>
+
+<div class="card ok">
+<strong>Tudo certo quando:</strong> o <code>doctor</code> mostra ✅ em todas as dependências (click, pyaudio, sounddevice, faster_whisper, anthropic, docx, weasyprint, yaml, ffmpeg) e na chave de API.
+</div>
+
+<p>Se precisar reinstalar as dependências (por exemplo, em outra máquina):</p>
+<pre><code>python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
+
+<div class="card warn">
+<strong>Atenção:</strong> o pacote <code>av</code> deve ficar abaixo da versão 16 (<code>av&lt;16</code>, já fixado no <code>requirements.txt</code>). Versões mais novas quebram a transcrição do faster-whisper.
+</div>
+
+<h2 id="env">2. Configurando a chave de API (.env)</h2>
+
+<p>As chaves ficam em um arquivo <code>.env</code> que <strong>nunca vai para o git</strong> (está no <code>.gitignore</code>). O bot procura o arquivo em dois lugares, nesta ordem:</p>
+
+<ol>
+  <li><code class="path">~/.meeting-bot/.env</code> — global, vale em qualquer pasta</li>
+  <li><code>.env</code> na pasta do projeto (ou na pasta atual)</li>
+</ol>
+
+<h3>Passo a passo</h3>
+<pre><code># 1. Copiar o modelo:
+cp .env.example .env
+
+# 2. Editar o .env e preencher a chave do provedor escolhido:
+#    ANTHROPIC_API_KEY=sk-ant-api03-...   (para Claude)
+#    OPENAI_API_KEY=sk-...                (para OpenAI)
+
+# 3. Dizer ao bot qual provedor usar:
+meeting-bot config set ai_provider anthropic   # ou: openai
+
+# 4. Confirmar:
+meeting-bot doctor</code></pre>
+
+<p>Variáveis exportadas no shell (ex.: no <code>.bashrc</code>) têm <strong>precedência</strong> sobre o <code>.env</code>.</p>
+
+<h2 id="comandos">3. Comandos</h2>
+
+<table>
+  <tr><th>Comando</th><th>O que faz</th></tr>
+  <tr><td><code>meeting-bot start "tema"</code></td><td>Inicia a gravação de áudio (via ffmpeg/PulseAudio)</td></tr>
+  <tr><td><code>meeting-bot stop</code></td><td>Para a gravação e salva o arquivo <code>.wav</code></td></tr>
+  <tr><td><code>meeting-bot summary</code></td><td>Transcreve a última reunião (Whisper) e gera resumo com IA</td></tr>
+  <tr><td><code>meeting-bot export --format pdf</code></td><td>Exporta o resumo (<code>md</code>, <code>pdf</code>, <code>docx</code> ou <code>html</code>)</td></tr>
+  <tr><td><code>meeting-bot list</code></td><td>Lista as reuniões (filtros: <code>--date</code>, <code>--tag</code>)</td></tr>
+  <tr><td><code>meeting-bot search "termo"</code></td><td>Busca reuniões por tema, participantes ou tags</td></tr>
+  <tr><td><code>meeting-bot config init</code></td><td>Cria as configurações padrão</td></tr>
+  <tr><td><code>meeting-bot config get [chave]</code></td><td>Mostra uma configuração (ou todas)</td></tr>
+  <tr><td><code>meeting-bot config set chave valor</code></td><td>Altera uma configuração</td></tr>
+  <tr><td><code>meeting-bot doctor</code></td><td>Verifica dependências, arquivos .env e chaves de API</td></tr>
+</table>
+
+<h2 id="fluxo">4. Fluxo de trabalho típico</h2>
+
+<pre><code># Uma vez só (primeira utilização):
+meeting-bot config init
+
+# Durante a reunião (em outra aba do terminal):
+meeting-bot start "projeto-alpha-sprint-3"
+
+# Ao terminar:
+meeting-bot stop
+meeting-bot summary
+meeting-bot export --format pdf</code></pre>
+
+<div class="card">
+<strong>Primeira transcrição:</strong> o modelo Whisper é baixado do Hugging Face no primeiro uso (o modelo <code>small</code> tem ~460&nbsp;MB). Para algo mais leve: <code>meeting-bot config set whisper_model tiny</code>.
+</div>
+
+<h2 id="arquivos">5. Onde ficam os arquivos</h2>
+
+<table>
+  <tr><th>Tipo</th><th>Local</th></tr>
+  <tr><td>Áudios gravados (<code>.wav</code>)</td><td><code class="path">~/.meeting-bot/meetings/</code></td></tr>
+  <tr><td>Resumos exportados</td><td><code>exports/</code> dentro da pasta onde o comando foi executado</td></tr>
+  <tr><td>Índice de reuniões</td><td><code class="path">~/.meeting-bot/index.yaml</code></td></tr>
+  <tr><td>Configurações</td><td><code class="path">~/.meeting-bot/config.yaml</code></td></tr>
+  <tr><td>Estado da gravação ativa</td><td><code class="path">~/.meeting-bot/state.json</code></td></tr>
+</table>
+
+<p>Para salvar os áudios em outra pasta (por exemplo, no OneDrive):</p>
+<pre><code>meeting-bot config set meetings_dir "/home/carnevali/OneDrive/Reunioes"</code></pre>
+
+<p>Cada comando mostra o caminho exato do arquivo gerado na linha <code>📁 Arquivo:</code> da saída.</p>
+
+<h2 id="config">6. Configurações (config.yaml)</h2>
+
+<table>
+  <tr><th>Chave</th><th>Padrão</th><th>Descrição</th></tr>
+  <tr><td><code>language</code></td><td><code>pt-BR</code></td><td>Idioma dos resumos</td></tr>
+  <tr><td><code>timezone</code></td><td><code>America/Sao_Paulo</code></td><td>Fuso horário</td></tr>
+  <tr><td><code>default_output_format</code></td><td><code>md</code></td><td>Formato padrão de exportação</td></tr>
+  <tr><td><code>whisper_model</code></td><td><code>small</code></td><td>Modelo de transcrição: tiny, base, small, medium, large</td></tr>
+  <tr><td><code>ai_provider</code></td><td><code>anthropic</code></td><td>Provedor de IA: anthropic ou openai</td></tr>
+  <tr><td><code>ai_model</code></td><td><code>claude-3-5-haiku</code></td><td>Modelo de IA para o resumo</td></tr>
+  <tr><td><code>meetings_dir</code></td><td><em>(vazio)</em></td><td>Pasta dos áudios (padrão: ~/.meeting-bot/meetings)</td></tr>
+</table>
+
+<h2 id="problemas">7. Solução de problemas</h2>
+
+<h3>«comando não encontrado»</h3>
+<p>Ative o ambiente virtual: <code>source .venv/bin/activate</code>. Alternativas que funcionam sem ativar:</p>
+<pre><code>./bin/meeting-bot doctor
+./.venv/bin/python -m meeting_bot.cli doctor</code></pre>
+
+<h3>doctor mostra ❌ nas dependências</h3>
+<p>Você está no Python do sistema, não no <code>.venv</code>. Ative o ambiente virtual (acima) e rode de novo.</p>
+
+<h3>⚠️ chave de API não configurada</h3>
+<p>Verifique no <code>.env</code> se a linha está exatamente <code>ANTHROPIC_API_KEY=sk-ant-...</code> — sem espaços antes do <code>=</code> e sem aspas. Depois confirme com <code>meeting-bot doctor</code>.</p>
+
+<h3>Resumo sai como «placeholder»</h3>
+<p>Significa que o bot não encontrou chave de API válida. Confira o <code>.env</code> e o provedor configurado (<code>meeting-bot config get ai_provider</code>).</p>
+
+<h3>Transcrição vem vazia ou «simulada»</h3>
+<p>Com áudio sem fala (silêncio), o texto vazio é normal. Se aparecer «[Transcrição simulada...]», o faster-whisper não carregou — rode <code>meeting-bot doctor</code> e confira o pacote <code>av&lt;16</code>.</p>
+
+<h3>Gravação não capta áudio</h3>
+<p>A captura usa <code>ffmpeg -f pulse -i default</code>. Verifique se o PulseAudio/PipeWire está ativo e se o microfone padrão do sistema está correto (configurações de som do Linux).</p>
+
+<footer>
+  Manual do meeting-bot · gerado em 15/11/2026 · arquivo: <code>manual.html</code> na raiz do projeto
+</footer>
+
+</div>
+</body>
+</html>
